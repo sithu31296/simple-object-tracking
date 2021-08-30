@@ -1,0 +1,8 @@
+seaborn
+ftfy
+regex
+matplotlib
+numpy
+opencv-python
+scipy
+tqdm
