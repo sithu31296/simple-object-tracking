@@ -16,6 +16,12 @@ It includes object detection model and clip+sort (replacing deepsort in normal o
 
 Other requirements can be installed with `pip install -r requirements.txt`.
 
+Clone the repository recursively:
+
+```bash
+$ git clone --recurse-submodules https://github.com/sithu31296/simple-object-tracking.git
+```
+
 Then download a YOLO model's weight from [YOLOv5](https://github.com/ultralytics/yolov5) and place it in `checkpoints`.
 
 ## Tracking
