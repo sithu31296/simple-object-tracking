@@ -98,11 +98,10 @@ class KalmanFilter:
             self._std_weight_velocity * mean[3],
             1e-5,
             self._std_weight_velocity * mean[3]]
-        motion_cov = np.diag(np.square(np.r_[std_pos, std_vel]))
 
+        motion_cov = np.diag(np.square(np.r_[std_pos, std_vel]))
         mean = np.dot(self._motion_mat, mean)
-        covariance = np.linalg.multi_dot((
-            self._motion_mat, covariance, self._motion_mat.T)) + motion_cov
+        covariance = np.linalg.multi_dot((self._motion_mat, covariance, self._motion_mat.T)) + motion_cov
 
         return mean, covariance
 
@@ -123,11 +122,12 @@ class KalmanFilter:
             1e-1,
             self._std_weight_position * mean[3]
         ]
-        innovation_cov = np.diag(np.square(std))
 
+        innovation_cov = np.diag(np.square(std))
         mean = np.dot(self._update_mat, mean)
-        covariance = np.linalg.multi_dot((self._update_mat, covariance, self._update_mat.T))
-        return mean, covariance + innovation_cov
+        covariance = np.linalg.multi_dot((self._update_mat, covariance, self._update_mat.T)) + innovation_cov
+        
+        return mean, covariance 
 
     def update(self, mean, covariance, measurement):
         """Run Kalman filter correction step.

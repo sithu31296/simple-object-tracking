@@ -56,8 +56,7 @@ class Track:
         vector is added to this list.
     """
 
-    def __init__(self, mean, covariance, track_id, n_init, max_age,
-                 feature=None, class_num=None):
+    def __init__(self, mean, covariance, track_id, n_init, max_age, feature=None, class_id=None):
         self.mean = mean
         self.covariance = covariance
         self.track_id = track_id
@@ -72,7 +71,7 @@ class Track:
 
         self._n_init = n_init
         self._max_age = max_age
-        self.class_num = class_num
+        self.class_id = class_id
 
     def to_tlwh(self):
         """Get current position in bounding box format `(top left x, top left y,
@@ -99,6 +98,10 @@ class Track:
         ret[2:] = ret[:2] + ret[2:]
         return ret
 
+    def increment_age(self):
+        self.age += 1
+        self.time_since_update += 1
+
     def predict(self, kf):
         """Propagate the state distribution to the current time step using a
         Kalman filter prediction step.
@@ -108,8 +111,7 @@ class Track:
             The Kalman filter.
         """
         self.mean, self.covariance = kf.predict(self.mean, self.covariance)
-        self.age += 1
-        self.time_since_update += 1
+        self.increment_age()
 
     def update(self, kf, detection):
         """Perform Kalman filter measurement update step and update the feature
@@ -121,8 +123,7 @@ class Track:
         detection : Detection
             The associated detection.
         """
-        self.mean, self.covariance = kf.update(
-            self.mean, self.covariance, detection.to_xyah())
+        self.mean, self.covariance = kf.update(self.mean, self.covariance, detection.to_xyah())
         self.features.append(detection.feature)
 
         self.hits += 1
