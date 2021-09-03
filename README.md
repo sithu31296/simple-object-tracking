@@ -12,7 +12,7 @@
 
 This is the simplest implementation of Roboflow [zero-shot-object-tracking](https://github.com/roboflow-ai/zero-shot-object-tracking); which incorporates CLIP as a feature extractor in DeepSORT. [CLIP](https://openai.com/blog/clip/) is a zero-shot classification model; which is pretrained under vision-langauge supervision with a lot of data.
 
-The benefit of this approach is that it can track a lof of classes out-of-the-box without needing to re-train the feature extractor (re-identification model) in DeepSORT. Its performance will not be as good as traditional re-identification model; which is trained for specific purpose.
+The benefit of this approach is that it can track a lof of classes out-of-the-box without needing to re-train the feature extractor (re-identification model) in DeepSORT. Its performance may not be as good as traditional re-identification model; which is trained for specific purpose.
 
 
 ## Requirements
@@ -59,7 +59,7 @@ $ python track.py --source VIDEO_PATH --yolo-model-path checkpoints/yolov5s.pt -
 * Save the tracking results of MOT16 with the following command:
 
 ```bash
-$ python eval_mot.py --root MOT_DATASET_ROOT_DIR --yolo-model-path checkpoints/yolov5m.pt
+$ python eval_mot.py --root MOT16_ROOT_DIR --yolo-model-path checkpoints/yolov5m.pt
 ```
 
 * Evaluate with TrackEval:
@@ -67,8 +67,8 @@ $ python eval_mot.py --root MOT_DATASET_ROOT_DIR --yolo-model-path checkpoints/y
 ```bash
 $ python TrackEval/scripts/run_mot_challenge.py
     --BENCHMARK MOT16
-    --GT_FOLDER /home/sithu/datasets/simple-object-tracking/data/gt/mot_challenge/
-    --TRACKERS_FOLDER /home/sithu/datasets/simple-object-tracking/data/trackers/mot_challenge/
+    --GT_FOLDER PROJECT_ROOT/data/gt/mot_challenge/
+    --TRACKERS_FOLDER PROJECT_ROOT/data/trackers/mot_challenge/
     --TRACKERS_TO_EVAL mot_det
     --SPLIT_TO_EVAL train
     --USE_PARALLEL True
@@ -76,9 +76,11 @@ $ python TrackEval/scripts/run_mot_challenge.py
     --PRINT_ONLY_COMBINED True
 ```
 
+> Notes: `FOLDER` parameters in `run_mot_challenge.py` must be an absolute path.
+
 Detector | Feature Extractor | MOTA | HOTA | IDF1 | IDs | MT | ML | FP | FN
 --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
-YOLOv5m-COCO | CLIP <br>(ViT-B/32) | 35.289 | 35.029 | 38.334 | 335 | 117 | 191 | 7061 | 63865
+YOLOv5m<br>(COCO) | CLIP<br>(ViT-B/32) | 35.289 | 35.029 | 38.334 | 335 | 117 | 191 | 7061 | 63865
 
 
 ## References
