@@ -149,11 +149,12 @@ class FPS:
         self.synchronize()
         self.prev_time = time.time()
 
-    def stop(self):
+    def stop(self, debug=True):
         self.synchronize()
         self.accum_time += time.time() - self.prev_time
         self.counts += 1
-        print(f"FPS: {round(self.counts / self.accum_time)}")
+        self.fps = round(self.counts / self.accum_time)
+        if debug: print(f"FPS: {self.fps}")
 
 
 def plot_one_box(box, img, color=None, label=None):

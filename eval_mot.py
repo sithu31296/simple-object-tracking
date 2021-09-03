@@ -83,11 +83,20 @@ if __name__ == '__main__':
     root = Path(args.root) / 'train'
     folders = root.iterdir()
 
+    total_fps = 0
+
     for folder in folders:
+        fps = FPS()
         reader = SequenceStream(folder / 'img1')
         txt_path = save_path / f"{folder.stem}.txt"
 
         for i, frame in tqdm(enumerate(reader), total=len(reader)):
+            fps.start()
             tracking.predict(frame, txt_path, i)
+            fps.stop(False)
 
+        print(f"FPS: {fps.fps}")
+        total_fps += fps.fps
         del reader
+    
+    print(f"Average FPS for MOT16: {round(total_fps / len(folder))}")
