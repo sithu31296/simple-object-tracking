@@ -137,9 +137,10 @@ class VideoWriter:
 
 
 class FPS:
-    def __init__(self) -> None:
+    def __init__(self, avg=10) -> None:
         self.accum_time = 0
         self.counts = 0
+        self.avg = avg
 
     def synchronize(self):
         if torch.cuda.is_available():
@@ -153,8 +154,11 @@ class FPS:
         self.synchronize()
         self.accum_time += time.time() - self.prev_time
         self.counts += 1
-        self.fps = round(self.counts / self.accum_time)
-        if debug: print(f"FPS: {self.fps}")
+        if self.counts == self.avg:
+            self.fps = round(self.counts / self.accum_time)
+            if debug: print(f"FPS: {self.fps}")
+            self.counts = 0
+            self.accum_time = 0
 
 
 def plot_one_box(box, img, color=None, label=None):

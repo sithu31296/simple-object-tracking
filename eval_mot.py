@@ -83,10 +83,10 @@ if __name__ == '__main__':
     root = Path(args.root) / 'train'
     folders = root.iterdir()
 
-    total_fps = 0
+    total_fps = []
 
-    for c, folder in enumerate(folders):
-        fps = FPS()
+    for folder in folders:
+        fps = FPS(avg=100)
         reader = SequenceStream(folder / 'img1')
         txt_path = save_path / f"{folder.stem}.txt"
 
@@ -96,7 +96,7 @@ if __name__ == '__main__':
             fps.stop(False)
 
         print(f"FPS: {fps.fps}")
-        total_fps += fps.fps
+        total_fps.append(fps.fps)
         del reader
     
-    print(f"Average FPS for MOT16: {round(total_fps / (c+1))}")
+    print(f"Average FPS for MOT16: {round(sum(total_fps) / len(total_fps))}")
