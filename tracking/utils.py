@@ -192,8 +192,8 @@ def scale_boxes(boxes, orig_shape, new_shape):
     gain = min(nH / H, nW / W)
     pad = (nH - H * gain) / 2, (nW - W * gain) / 2
 
-    boxes[:, [0, 2]] -= pad[1]
-    boxes[:, [1, 3]] -= pad[0]
+    boxes[:, ::2] -= pad[1]
+    boxes[:, 1::2] -= pad[0]
     boxes[:, :4] /= gain
     
     boxes[:, ::2].clamp_(0, orig_shape[1])
