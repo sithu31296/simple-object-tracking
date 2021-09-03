@@ -3,8 +3,8 @@
 <div align="center">
 <p>Object Tracking with YOLOv5, CLIP and DeepSORT</p>
 <p>
-<img src="gifs/test_out.gif" width="400"/> <img src="gifs/cars_out.gif" width="400"/> 
-<img src="gifs/newyork_out.gif" width="400"/> <img src="gifs/traffic_out.gif" width="400"/> 
+<img src="gifs/test_out.gif" width="320"/> <img src="gifs/cars_out.gif" width="320"/> 
+<img src="gifs/newyork_out.gif" width="320"/> <img src="gifs/traffic_out.gif" width="320"/> 
 </p>
 </div>
 
@@ -78,7 +78,7 @@ $ python TrackEval/scripts/run_mot_challenge.py
 
 > Notes: `FOLDER` parameters in `run_mot_challenge.py` must be an absolute path.
 
-Detector | Feature Extractor | MOTA | HOTA | IDF1 | IDs | MT | ML | FP | FN
+Detector | Feature Extractor | MOTA↑ | HOTA↑ | IDF1↑ | IDs↓ | MT↑ | ML↓ | FP↓ | FN↓
 --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
 YOLOv5m<br>(COCO) | CLIP<br>(ViT-B/32) | 35.289 | 35.029 | 38.334 | 335 | 117 | 191 | 7061 | 63865
 
