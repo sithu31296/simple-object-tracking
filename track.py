@@ -136,12 +136,11 @@ if __name__ == '__main__':
         webcam = WebcamStream()
         fps = FPS()
 
-        while webcam.isOpened:
+        for frame in webcam:
             fps.start()
-            frame = webcam.read()
             output = tracking.predict(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
             fps.stop()
-            webcam.show(cv2.cvtColor(output, cv2.COLOR_RGB2BGR))
+            cv2.imshow(cv2.cvtColor(output, cv2.COLOR_RGB2BGR))
     
     else:
         reader = VideoReader(args.source)

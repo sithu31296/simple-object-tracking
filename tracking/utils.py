@@ -31,29 +31,36 @@ colors = Colors()
 
 
 class WebcamStream:
-    isOpened = True
-
     def __init__(self, src=0) -> None:
-        cap = cv2.VideoCapture(src)
-        assert cap.isOpened(), f"Failed to open webcam {src}"
-        _, self.frame = cap.read()
-        Thread(target=self.update, args=([cap]), daemon=True).start()
+        self.cap = cv2.VideoCapture(src)
+        self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 3)
+        assert self.cap.isOpened(), f"Failed to open webcam {src}"
+        _, self.frame = self.cap.read()
+        Thread(target=self.update, args=([]), daemon=True).start()
 
-    def update(self, cap):
-        while cap.isOpened():
-            _, self.frame = cap.read()
+    def update(self):
+        while self.cap.isOpened():
+            _, self.frame = self.cap.read()
 
-    def read(self):
-        return self.frame.copy()
+    def __iter__(self):
+        self.count = -1
+        return self
 
-    def show(self, img):
-        cv2.imshow('frame', img)
+    def __next__(self):
+        self.count += 1
+
         if cv2.waitKey(1) == ord('q'):
             self.stop()
 
+        return self.frame.copy()
+
     def stop(self):
+        self.cap.release()
         cv2.destroyAllWindows()
         raise StopIteration
+
+    def __len__(self):
+        return 0
 
 
 class SequenceStream:
