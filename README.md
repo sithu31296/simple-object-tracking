@@ -3,8 +3,7 @@
 <div align="center">
 <p>Object Tracking with YOLOv5, CLIP and DeepSORT</p>
 <p>
-<img src="gifs/test_out.gif" width="320"/> <img src="gifs/cars_out.gif" width="320"/> 
-<img src="gifs/newyork_out.gif" width="320"/> <img src="gifs/traffic_out.gif" width="320"/> 
+<img src="gifs/test_out.gif" width="250"/> <img src="gifs/newyork_out.gif" width="250"/> <img src="gifs/cars_out.gif" width="250"/> 
 </p>
 </div>
 
