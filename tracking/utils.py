@@ -141,10 +141,16 @@ class FPS:
         self.accum_time = 0
         self.curr_fps = 0
 
+    def synchronize(self):
+        if torch.cuda.is_available():
+            torch.cuda.synchronize()
+
     def start(self):
+        self.synchronize()
         self.prev_time = time.time()
 
     def stop(self):
+        self.synchronize()
         curr_time = time.time()
         self.accum_time += curr_time - self.prev_time
         self.prev_time = curr_time
