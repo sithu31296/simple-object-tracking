@@ -55,7 +55,7 @@ $ python track.py --source 0 --yolo-model checkpoints/yolov5s.pt --clip-model RN
 
 Available CLIP models: `RN50`, `RN101`, `RN50x4`, `ViT-B/32`, `ViT-B/16`.
 
-Check [here](tracking/utils.py#14) to get COCO class index for your class.
+Check [here](tracking/utils.py#L14) to get COCO class index for your class.
 
 ## Evaluate on MOT16
 
