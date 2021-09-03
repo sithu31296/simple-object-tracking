@@ -1,20 +1,18 @@
-# Simple Object Tracking
-
-**Object Tracking with YOLOv5, CLIP and DeepSORT**
+# <div align="center">Simple Object Tracking</div>
 
 <div align="center">
+<p>Object Tracking with YOLOv5, CLIP and DeepSORT</p>
 <p>
 <img src="gifs/test_out.gif" width="400"/> <img src="gifs/cars_out.gif" width="400"/> 
 <img src="gifs/newyork_out.gif" width="400"/> <img src="gifs/traffic_out.gif" width="400"/> 
 </p>
-<br>
 </div>
 
 ## Introduction
 
-This is the simplest implementation of Roboflow [zero-shot-object-tracking](https://github.com/roboflow-ai/zero-shot-object-tracking). 
+This is the simplest implementation of Roboflow [zero-shot-object-tracking](https://github.com/roboflow-ai/zero-shot-object-tracking); which incorporates CLIP as a feature extractor in DeepSORT. [CLIP](https://openai.com/blog/clip/) is a zero-shot classification model; which is pretrained under vision-langauge supervision with a lot of data.
 
-It includes object detection model and clip+sort (replacing deepsort in normal object tracking). The benefit of this is that it can track a lot classes out-of-the-box without needing to re-train the deep model of the deepsort algorithm. [CLIP](https://openai.com/blog/clip/) is a zero-shot classification model; pretrained under vision-langauge supervision.
+The benefit of this approach is that it can track a lof of classes out-of-the-box without needing to re-train the feature extractor (re-identification model) in DeepSORT. Its performance will not be as good as traditional re-identification model; which is trained for specific purpose.
 
 
 ## Requirements
@@ -80,7 +78,7 @@ $ python TrackEval/scripts/run_mot_challenge.py
 
 Detector | Feature Extractor | MOTA | HOTA | IDF1 | IDs | MT | ML | FP | FN
 --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
-YOLOv5m | CLIP <br>(ViT-B/32) | 35.289 | 35.029 | 38.334 | 335 | 117 | 191 | 7061 | 63865
+YOLOv5m-COCO | CLIP <br>(ViT-B/32) | 35.289 | 35.029 | 38.334 | 335 | 117 | 191 | 7061 | 63865
 
 
 ## References
