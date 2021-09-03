@@ -9,9 +9,11 @@
 
 ## Introduction
 
-This is the simplest implementation of Roboflow [zero-shot-object-tracking](https://github.com/roboflow-ai/zero-shot-object-tracking); which incorporates CLIP as a feature extractor in DeepSORT. [CLIP](https://openai.com/blog/clip/) is a zero-shot classification model; which is pretrained under vision-langauge supervision with a lot of data.
+This is a simple mulit-object tracking implementation with zero-shot or self-supervised feature extractors. The implementation is based from Roboflow [zero-shot-object-tracking](https://github.com/roboflow-ai/zero-shot-object-tracking); which incorporates CLIP as a feature extractor in DeepSORT. 
 
-The benefit of this approach is that it can track a lof of classes out-of-the-box without needing to re-train the feature extractor (re-identification model) in DeepSORT. Its performance may not be as good as traditional re-identification model; which is trained for specific purpose.
+[CLIP](https://openai.com/blog/clip/) is a zero-shot classification model; which is pretrained under vision-langauge supervision with a lot of data. CLIP's zero-shot performance is on par with supervised ResNet models.
+
+The benefit of this approach is that it can track a lof of classes out-of-the-box without needing to re-train the feature extractor (re-identification model) for a specific class in DeepSORT. Its performance may not be as good as traditional re-identification model; which is trained on tracking/re-identification datasets.
 
 
 ## Requirements
@@ -77,15 +79,20 @@ $ python TrackEval/scripts/run_mot_challenge.py
 
 > Notes: `FOLDER` parameters in `run_mot_challenge.py` must be an absolute path.
 
-Detector | Feature Extractor | MOTA↑ | HOTA↑ | IDF1↑ | IDs↓ | MT↑ | ML↓ | FP↓ | FN↓
+For tracking persons, instead of using a COCO-pretrained model, using a model trained on multi-person dataset will get better accuracy. You can download a YOLOv5m model trained on [CrowdHuman](https://www.crowdhuman.org/) dataset from [here](https://drive.google.com/file/d/1gglIwqxaH2iTvy6lZlXuAcMpd_U0GCUb/view?usp=sharing). The weights are from [deeparcrk/yolov5-crowdhuman](https://github.com/deepakcrk/yolov5-crowdhuman). It has 2 classes: 'person' and 'head'. So, you can use this model for both person and head tracking.
+
+Detector | Feature Extractor | MOTA↑ | HOTA↑ | IDF1↑ | IDsw↓ | MT↑ | ML↓ | FP↓ | FN↓
 --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
-YOLOv5m<br>(COCO) | CLIP<br>(ViT-B/32) | 35.289 | 35.029 | 38.334 | 335 | 117 | 191 | 7061 | 63865
+YOLOv5m<br>(COCO) | CLIP<br>(ViT-B/32) | 35.289 | 35.029 | 38.334 | **519** | 117 | 191 | **7061** | 63865
+YOLOv5m<br>(CrowdHuman) | CLIP<br>(ViT-B/32) | **53.214** | **42.943** | **51.015** | 941 | **199** | **91** | 14239 | **36475**
 
 
 ## References
 
 * https://github.com/roboflow-ai/zero-shot-object-tracking
 * https://github.com/ultralytics/yolov5
+* https://github.com/nwojke/deep_sort
 * https://github.com/openai/CLIP
-* https://github.com/mikel-brostrom/Yolov5_DeepSort_Pytorch
 * https://github.com/JonathonLuiten/TrackEval
+* https://github.com/deepakcrk/yolov5-crowdhuman
+* https://github.com/mikel-brostrom/Yolov5_DeepSort_Pytorch
