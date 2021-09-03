@@ -5,7 +5,7 @@ from tqdm import tqdm
 from tracking.sort.detection import Detection
 from tracking.utils import *
 
-from .track import Tracking
+from track import Tracking
 
 
 class EvalTracking(Tracking):
@@ -62,7 +62,7 @@ def argument_parser():
 
 if __name__ == '__main__':
     args = argument_parser()
-    tracking = Tracking(
+    tracking = EvalTracking(
         args.yolo_model_path, 
         args.img_size, 
         args.filter_class,
