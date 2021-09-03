@@ -17,7 +17,8 @@ from yolov5.models.experimental import attempt_load
 
 class Tracking:
     def __init__(self, 
-        yolo_model_path, 
+        yolo_model, 
+        clip_model,
         img_size=640,
         filter_class=None,
         conf_thres=0.25,
@@ -34,11 +35,11 @@ class Tracking:
         self.filter_class = filter_class
 
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.model = attempt_load(yolo_model_path, map_location=self.device)
+        self.model = attempt_load(yolo_model, map_location=self.device)
         self.model = self.model.to(self.device)
         self.names = self.model.names
 
-        self.clip_model, self.clip_transform = clip.load('ViT-B/32', device=self.device, jit=False)
+        self.clip_model, self.clip_transform = clip.load(clip_model, device=self.device)
         self.tracker = DeepSORTTracker('cosine', max_cosine_dist, nn_budget, max_iou_dist, max_age, n_init)
 
 
@@ -103,7 +104,8 @@ class Tracking:
 def argument_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('--source', type=str, default='0')
-    parser.add_argument('--yolo-model-path', type=str, default='checkpoints/yolov5s.pt')
+    parser.add_argument('--yolo-model', type=str, default='checkpoints/yolov5s.pt')
+    parser.add_argument('--clip-model', type=str, default='RN50')
     parser.add_argument('--img-size', type=int, default=640)
     parser.add_argument('--filter-class', nargs='+', type=int, default=None)
     parser.add_argument('--conf-thres', type=float, default=0.4)
@@ -119,7 +121,8 @@ def argument_parser():
 if __name__ == '__main__':
     args = argument_parser()
     tracking = Tracking(
-        args.yolo_model_path, 
+        args.yolo_model, 
+        args.clip_model,
         args.img_size, 
         args.filter_class,
         args.conf_thres, 

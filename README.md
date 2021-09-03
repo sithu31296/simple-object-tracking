@@ -33,25 +33,29 @@ Then download a YOLO model's weight from [YOLOv5](https://github.com/ultralytics
 
 ## Tracking
 
-With a webcam:
+Track all classes:
 
 ```bash
-## track all COCO classes
-$ python track.py --source 0 --yolo-model-path checkpoints/yolov5s.pt
+## webcam
+$ python track.py --source 0 --yolo-model checkpoints/yolov5s.pt --clip-model RN50
 
-## track only person class
-$ python track.py --source 0 --yolo-model-path checkpoints/yolov5s.pt --filter-class 0
+## video
+$ python track.py --source VIDEO_PATH --yolo-model checkpoints/yolov5s.pt --clip-model RN50
 ```
 
-With a video:
+Track only specified classes:
 
 ```bash
-## track all COCO classes
-$ python track.py --source VIDEO_PATH --yolo-model-path checkpoints/yolov5s.pt
-
 ## track only person class
-$ python track.py --source VIDEO_PATH --yolo-model-path checkpoints/yolov5s.pt --filter-class 0
+$ python track.py --source 0 --yolo-model checkpoints/yolov5s.pt --clip-model RN50 --filter-class 0
+
+## track person and car classes
+$ python track.py --source 0 --yolo-model checkpoints/yolov5s.pt --clip-model RN50 --filter-class 0 2
 ```
+
+Available CLIP models: `RN50`, `RN101`, `RN50x4`, `ViT-B/32`, `ViT-B/16`.
+
+Check [here](tracking/utils.py#14) to get COCO class index for your class.
 
 ## Evaluate on MOT16
 
@@ -60,7 +64,7 @@ $ python track.py --source VIDEO_PATH --yolo-model-path checkpoints/yolov5s.pt -
 * Save the tracking results of MOT16 with the following command:
 
 ```bash
-$ python eval_mot.py --root MOT16_ROOT_DIR --yolo-model-path checkpoints/yolov5m.pt
+$ python eval_mot.py --root MOT16_ROOT_DIR --yolo-model checkpoints/yolov5m.pt --clip-model RN50
 ```
 
 * Evaluate with TrackEval:
@@ -81,11 +85,25 @@ $ python TrackEval/scripts/run_mot_challenge.py
 
 For tracking persons, instead of using a COCO-pretrained model, using a model trained on multi-person dataset will get better accuracy. You can download a YOLOv5m model trained on [CrowdHuman](https://www.crowdhuman.org/) dataset from [here](https://drive.google.com/file/d/1gglIwqxaH2iTvy6lZlXuAcMpd_U0GCUb/view?usp=sharing). The weights are from [deepakcrk/yolov5-crowdhuman](https://github.com/deepakcrk/yolov5-crowdhuman). It has 2 classes: 'person' and 'head'. So, you can use this model for both person and head tracking.
 
+<u>MOT16 Evaluation Results</u>
+
 Detector | Feature Extractor | MOTA↑ | HOTA↑ | IDF1↑ | IDsw↓ | MT↑ | ML↓ | FP↓ | FN↓
 --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
-YOLOv5m<br>(COCO) | CLIP<br>(ViT-B/32) | 35.289 | 35.029 | 38.334 | **519** | 117 | 191 | **7061** | 63865
-YOLOv5m<br>(CrowdHuman) | CLIP<br>(ViT-B/32) | **53.214** | **42.943** | **51.015** | 941 | **199** | **91** | 14239 | **36475**
+YOLOv5m<br>(COCO) | CLIP<br>(ViT-B/32) | 35.29 | 35.03 | 38.33 | **519** | 117 | 191 | **7061** | 63865
+YOLOv5m<br>(CrowdHuman) | CLIP<br>(ViT-B/32) | **53.21** | 42.94 | 51.02 | 941 | **199** | 91 | 14239 | **36475**
+YOLOv5m<br>(CrowdHuman) | CLIP<br>(RN50) | 53.07 | **43.14** | **51.97** | 946 | 198 | **88** | 14331 | 36537
 
+
+<u>FPS Results</u>
+
+Detector | Feature Extractor | GPU | Precision | FPS
+--- | --- | --- | --- | ---
+YOLOv5s | CLIP (RN50) | GTX-1660ti | FP32 | 34
+YOLOv5m | CLIP (RN50) | GTX-1660ti | FP32 | 27
+YOLOv5s | CLIP (ViT-B/32) | GTX-1660ti | FP32 | 24
+YOLOv5m | CLIP (ViT-B/32) | GTX-1660ti | FP32 | 20
+
+> Note: Image size used is (480, 640) and only one detection exists in a frame.
 
 ## References
 
