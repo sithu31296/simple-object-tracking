@@ -6,7 +6,9 @@ import numpy as np
 from pathlib import Path
 from torchvision import ops, io
 from threading import Thread
-
+from torch.backends import cudnn
+cudnn.benchmark = True
+cudnn.deterministic = False
 
 
 class Colors:
