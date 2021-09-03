@@ -85,7 +85,9 @@ $ python TrackEval/scripts/run_mot_challenge.py
 
 For tracking persons, instead of using a COCO-pretrained model, using a model trained on multi-person dataset will get better accuracy. You can download a YOLOv5m model trained on [CrowdHuman](https://www.crowdhuman.org/) dataset from [here](https://drive.google.com/file/d/1gglIwqxaH2iTvy6lZlXuAcMpd_U0GCUb/view?usp=sharing). The weights are from [deepakcrk/yolov5-crowdhuman](https://github.com/deepakcrk/yolov5-crowdhuman). It has 2 classes: 'person' and 'head'. So, you can use this model for both person and head tracking.
 
-<u>MOT16 Evaluation Results</u>
+## Results
+
+**MOT16 Evaluation Results**
 
 Detector | Feature Extractor | MOTA↑ | HOTA↑ | IDF1↑ | IDsw↓ | MT↑ | ML↓ | FP↓ | FN↓
 --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
@@ -94,7 +96,7 @@ YOLOv5m<br>(CrowdHuman) | CLIP<br>(ViT-B/32) | **53.21** | 42.94 | 51.02 | 941 |
 YOLOv5m<br>(CrowdHuman) | CLIP<br>(RN50) | 53.07 | **43.14** | **51.97** | 946 | 198 | **88** | 14331 | 36537
 
 
-<u>FPS Results</u>
+**FPS Results**
 
 Detector | Feature Extractor | GPU | Precision | FPS
 --- | --- | --- | --- | ---
@@ -103,7 +105,7 @@ YOLOv5m | CLIP (RN50) | GTX-1660ti | FP32 | 27
 YOLOv5s | CLIP (ViT-B/32) | GTX-1660ti | FP32 | 24
 YOLOv5m | CLIP (ViT-B/32) | GTX-1660ti | FP32 | 20
 
-> Note: Image size used is (480, 640) and only one detection exists in a frame.
+> Note: Image size used is (480, 640) with one detection per frame.
 
 ## References
 
