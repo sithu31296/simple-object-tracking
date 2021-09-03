@@ -6,8 +6,7 @@ from PIL import Image
 from tqdm import tqdm
 from tracking import clip
 from tracking.sort.detection import Detection
-from tracking.sort.nn_matching import NearestNeighborDistanceMetric
-from tracking.sort.tracker import Tracker
+from tracking.sort.tracker import DeepSORTTracker
 from tracking.utils import *
 
 import sys
@@ -40,7 +39,7 @@ class Tracking:
         self.names = self.model.names
 
         self.clip_model, self.clip_transform = clip.load('ViT-B/32', device=self.device, jit=False)
-        self.tracker = Tracker(NearestNeighborDistanceMetric('cosine', max_cosine_dist, nn_budget), max_iou_dist, max_age, n_init)
+        self.tracker = DeepSORTTracker('cosine', max_cosine_dist, nn_budget, max_iou_dist, max_age, n_init)
 
 
     def preprocess(self, image):

@@ -1,13 +1,11 @@
 import numpy as np
-from . import kalman_filter
-from . import linear_assignment
-from . import iou_matching
+from .kalman_filter import KalmanFilter
+from .matching import NearestNeighborDistanceMetric, iou_cost, min_cost_matching, matching_cascade, gate_cost_matrix
 from .track import Track
 
 
-class Tracker:
-    """
-    This is the multi-target tracker.
+class DeepSORTTracker:
+    """DeepSORT Tracker
     Parameters
     ----------
     metric : nn_matching.NearestNeighborDistanceMetric
@@ -32,13 +30,13 @@ class Tracker:
         The list of active tracks at the current time step.
     """
 
-    def __init__(self, metric, max_iou_distance=0.7, max_age=60, n_init=3):
-        self.metric = metric
+    def __init__(self, metric_type='cosine', max_cosine_distance=0.4, nn_budget=None, max_iou_distance=0.7, max_age=60, n_init=3):
+        self.metric = NearestNeighborDistanceMetric(metric_type, max_cosine_distance, nn_budget)
         self.max_iou_distance = max_iou_distance
         self.max_age = max_age
         self.n_init = n_init
 
-        self.kf = kalman_filter.KalmanFilter()
+        self.kf = KalmanFilter()
         self.tracks = []
         self._next_id = 1
 
@@ -91,8 +89,7 @@ class Tracker:
             features = np.array([dets[i].feature for i in detection_indices])
             targets = np.array([tracks[i].track_id for i in track_indices])
             cost_matrix = self.metric.distance(features, targets)
-            cost_matrix = linear_assignment.gate_cost_matrix(self.kf, cost_matrix, tracks, dets, track_indices, detection_indices)
-
+            cost_matrix = gate_cost_matrix(self.kf, cost_matrix, tracks, dets, track_indices, detection_indices)
             return cost_matrix
 
         # Split track set into confirmed and unconfirmed tracks.
@@ -100,12 +97,12 @@ class Tracker:
         unconfirmed_tracks = [i for i, t in enumerate(self.tracks) if not t.is_confirmed()]
 
         # Associate confirmed tracks using appearance features.
-        matches_a, unmatched_tracks_a, unmatched_detections = linear_assignment.matching_cascade(gated_metric, self.metric.matching_threshold, self.max_age, self.tracks, detections, confirmed_tracks)
+        matches_a, unmatched_tracks_a, unmatched_detections = matching_cascade(gated_metric, self.metric.matching_threshold, self.max_age, self.tracks, detections, confirmed_tracks)
 
         # Associate remaining tracks together with unconfirmed tracks using IOU.
         iou_track_candidates = unconfirmed_tracks + [k for k in unmatched_tracks_a if self.tracks[k].time_since_update == 1]
         unmatched_tracks_a = [k for k in unmatched_tracks_a if self.tracks[k].time_since_update != 1]
-        matches_b, unmatched_tracks_b, unmatched_detections = linear_assignment.min_cost_matching(iou_matching.iou_cost, self.max_iou_distance, self.tracks, detections, iou_track_candidates, unmatched_detections)
+        matches_b, unmatched_tracks_b, unmatched_detections = min_cost_matching(iou_cost, self.max_iou_distance, self.tracks, detections, iou_track_candidates, unmatched_detections)
 
         matches = matches_a + matches_b
         unmatched_tracks = list(set(unmatched_tracks_a + unmatched_tracks_b))
