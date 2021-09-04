@@ -1,5 +1,6 @@
 import argparse
 import torch
+import shutil
 from pathlib import Path
 from tqdm import tqdm
 from tracking.utils import *
@@ -75,7 +76,7 @@ if __name__ == '__main__':
 
     save_path = Path('data') / 'trackers' / 'mot_challenge' / 'MOT16-train' / 'mot_det' / 'data'
     if save_path.exists():
-        save_path.rmdir()
+        shutil.rmtree(save_path)
     save_path.mkdir(parents=True)
 
     root = Path(args.root) / 'train'
