@@ -104,13 +104,13 @@ For tracking persons, instead of using a COCO-pretrained model, using a model tr
 
 Detector | Feature Extractor | MOTA↑ | HOTA↑ | IDF1↑ | IDsw↓ | MT↑ | ML↓ | FP↓ | FN↓ | FPS<br><sup>(GTX1660ti)
 --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
-YOLOv5m<br>(COCO) | CLIP<br>(RN50) | 35.42 | 35.37 | 39.42 | **486** | 115 | 192 | **6880** | 63931 | 7
-YOLOv5m<br>(CrowdHuman) | CLIP<br>(RN50) | 53.25 | **43.25** | **52.12** | 912 | 196 | **89** | 14076 | 36625 | 6
-YOLOv5m<br>(CrowdHuman) | CLIP<br>(ViT-B/32) | **53.35** | 43.03 | 51.25 | 896 | **199** | 91 | 14035 | **36575** | 4
+YOLOv5m<sup><br>(COCO) | CLIP<sup><br>(RN50) | 35.42 | 35.37 | 39.42 | **486** | 115 | 192 | **6880** | 63931 | 7
+YOLOv5m<sup><br>(CrowdHuman) | CLIP<sup><br>(RN50) | 53.25 | **43.25** | **52.12** | 912 | 196 | **89** | 14076 | 36625 | 6
+YOLOv5m<sup><br>(CrowdHuman) | CLIP<sup><br>(ViT-B/32) | **53.35** | 43.03 | 51.25 | 896 | **199** | 91 | 14035 | **36575** | 4
 
 **FPS Results**
 
-Detector | Feature Extractor | GPU | Precision | Image Size | <sup>Detection<br>/Frame | FPS
+Detector | Feature Extractor | GPU | Precision | Image Size | Detection<br>/Frame | FPS
 --- | --- | --- | --- | --- | --- | ---
 YOLOv5s | CLIP (RN50) | GTX-1660ti | FP32 | 480x640 | 1 | 40
 YOLOv5m | CLIP (RN50) | GTX-1660ti | FP32 | 480x640 | 1 | 32
