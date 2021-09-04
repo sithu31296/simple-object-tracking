@@ -5,7 +5,6 @@ import numpy as np
 from PIL import Image
 from tqdm import tqdm
 from tracking import clip
-from tracking.sort.detection import Detection
 from tracking.sort.tracker import DeepSORTTracker
 from tracking.utils import *
 
@@ -65,12 +64,6 @@ class Tracking:
         return features
 
 
-    def to_tlwh(self, boxes):
-        boxes[:, 2] -= boxes[:, 0]
-        boxes[:, 3] -= boxes[:, 1]
-        return boxes
-
-
     def postprocess(self, pred, img1, img0):
         pred = non_max_suppression(pred, self.conf_thres, self.iou_thres, classes=self.filter_class)
 
@@ -78,12 +71,9 @@ class Tracking:
             if len(det):
                 boxes = scale_boxes(det[:, :4], img0.shape[:2], img1.shape[-2:]).cpu()
                 features = self.extract_clip_features(boxes, img0)
-                detections = [
-                    Detection(bbox, class_id, feature) 
-                for bbox, class_id, feature in zip(self.to_tlwh(boxes), det[:, 5], features)]
 
                 self.tracker.predict()
-                self.tracker.update(detections)
+                self.tracker.update(boxes, det[:, 5], features)
 
                 for track in self.tracker.tracks:
                     if not track.is_confirmed() or track.time_since_update > 1: continue

@@ -1,4 +1,5 @@
 import numpy as np
+from .detection import Detection
 from .kalman_filter import KalmanFilter
 from .matching import NearestNeighborDistanceMetric, iou_cost, min_cost_matching, matching_cascade, gate_cost_matrix
 from .track import Track
@@ -40,6 +41,10 @@ class DeepSORTTracker:
         self.tracks = []
         self._next_id = 1
 
+    def reset(self):
+        self.tracks = []
+        self._next_id = 1
+
     def predict(self):
         """Propagate track state distributions one time step forward.
         This function should be called once every time step, before `update`.
@@ -52,13 +57,16 @@ class DeepSORTTracker:
             track.increment_age()
             track.mark_missed()
 
-    def update(self, detections):
-        """Perform measurement update and track management.
-        Parameters
-        ----------
-        detections : List[deep_sort.detection.Detection]
-            A list of detections at the current time step.
-        """
+    def to_tlwh(self, boxes):
+        boxes[:, 2] -= boxes[:, 0]
+        boxes[:, 3] -= boxes[:, 1]
+        return boxes
+
+    def update(self, boxes, classes, features):
+        detections = [
+            Detection(bbox, class_id, feature) 
+        for bbox, class_id, feature in zip(self.to_tlwh(boxes), classes, features)]
+
         # Run matching cascade.
         matches, unmatched_tracks, unmatched_detections = self._match(detections)
 

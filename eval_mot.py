@@ -2,7 +2,6 @@ import argparse
 import torch
 from pathlib import Path
 from tqdm import tqdm
-from tracking.sort.detection import Detection
 from tracking.utils import *
 
 from track import Tracking
@@ -19,12 +18,9 @@ class EvalTracking(Tracking):
             if len(det):
                 boxes = scale_boxes(det[:, :4], img0.shape[:2], img1.shape[-2:]).cpu()
                 features = self.extract_clip_features(boxes, img0)
-                detections = [
-                    Detection(bbox, class_id, feature) 
-                for bbox, class_id, feature in zip(self.to_tlwh(boxes), det[:, 5], features)]
 
                 self.tracker.predict()
-                self.tracker.update(detections)
+                self.tracker.update(boxes, det[:, 5], features)
 
                 for track in self.tracker.tracks:
                     if not track.is_confirmed() or track.time_since_update > 1: continue
@@ -88,6 +84,7 @@ if __name__ == '__main__':
     total_fps = []
 
     for folder in folders:
+        tracking.tracker.reset()
         fps = FPS(avg=100)
         reader = SequenceStream(folder / 'img1')
         txt_path = save_path / f"{folder.stem}.txt"
