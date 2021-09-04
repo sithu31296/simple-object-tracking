@@ -1,4 +1,4 @@
-# <div align="center">Simple Object Tracking</div>
+# <div align="center">Simple Multi-Object Tracking</div>
 
 <div align="center">
 <p>Object Tracking with YOLOv5, CLIP and DeepSORT</p>
@@ -7,11 +7,24 @@
 </p>
 </div>
 
+Feature Extractors (Replacement of Supervised Re-ID Models)
+
+- [x] [CLIP](https://arxiv.org/abs/2103.00020)
+- [ ] [DINO](https://arxiv.org/abs/2104.14294v2)
+- [ ] [MoCov3](https://arxiv.org/abs/2104.02057)
+
+Trackers
+
+- [x] [DeepSORT](https://arxiv.org/abs/1703.07402)
+- [ ] [Tracktor++](https://arxiv.org/abs/1903.05625)
+- [ ] [UniTrack](https://arxiv.org/abs/2107.02156)
+
+
 ## Introduction
 
-This is a simple mulit-object tracking implementation with zero-shot or self-supervised feature extractors. The implementation is based from Roboflow [zero-shot-object-tracking](https://github.com/roboflow-ai/zero-shot-object-tracking); which incorporates CLIP as a feature extractor in DeepSORT. 
+This is a two-stage simple mulit-object tracking implementation with zero-shot or self-supervised feature extractors. The implementation is based from Roboflow [zero-shot-object-tracking](https://github.com/roboflow-ai/zero-shot-object-tracking); which incorporates CLIP as a feature extractor in DeepSORT. 
 
-[CLIP](https://openai.com/blog/clip/) is a zero-shot classification model; which is pretrained under vision-langauge supervision with a lot of data. CLIP's zero-shot performance is on par with supervised ResNet models.
+CLIP is a zero-shot classification model; which is pretrained under vision-langauge supervision with a lot of data. CLIP's zero-shot performance is on par with supervised ResNet models.
 
 The benefit of this approach is that it can track a lof of classes out-of-the-box without needing to re-train the feature extractor (re-identification model) for a specific class in DeepSORT. Its performance may not be as good as traditional re-identification model; which is trained on tracking/re-identification datasets.
 
