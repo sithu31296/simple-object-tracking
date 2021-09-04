@@ -102,23 +102,21 @@ For tracking persons, instead of using a COCO-pretrained model, using a model tr
 
 **MOT16 Evaluation Results**
 
-Detector | Feature Extractor | MOTA↑ | HOTA↑ | IDF1↑ | IDsw↓ | MT↑ | ML↓ | FP↓ | FN↓
---- | --- | --- | --- | --- | --- | --- | --- | --- | ---
-YOLOv5m<br>(COCO) | CLIP<br>(ViT-B/32) | 35.29 | 35.03 | 38.33 | **519** | 117 | 191 | **7061** | 63865
-YOLOv5m<br>(CrowdHuman) | CLIP<br>(ViT-B/32) | **53.21** | 42.94 | 51.02 | 941 | **199** | 91 | 14239 | **36475**
-YOLOv5m<br>(CrowdHuman) | CLIP<br>(RN50) | 53.07 | **43.14** | **51.97** | 946 | 198 | **88** | 14331 | 36537
-
+Detector | Feature Extractor | MOTA↑ | HOTA↑ | IDF1↑ | IDsw↓ | MT↑ | ML↓ | FP↓ | FN↓ | FPS<br><sup>(GTX1660ti)
+--- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
+YOLOv5m<br>(COCO) | CLIP<br>(RN50) | 35.42 | 35.37 | 39.42 | **486** | 115 | 192 | **6880** | 63931 | 7
+YOLOv5m<br>(CrowdHuman) | CLIP<br>(RN50) | 53.25 | **43.25** | **52.12** | 912 | 196 | **89** | 14076 | 36625 | 6
+YOLOv5m<br>(CrowdHuman) | CLIP<br>(ViT-B/32) | **53.35** | 43.03 | 51.25 | 896 | **199** | 91 | 14035 | **36575** | 4
 
 **FPS Results**
 
-Detector | Feature Extractor | GPU | Precision | FPS
---- | --- | --- | --- | ---
-YOLOv5s | CLIP (RN50) | GTX-1660ti | FP32 | 40
-YOLOv5m | CLIP (RN50) | GTX-1660ti | FP32 | 32
-YOLOv5s | CLIP (ViT-B/32) | GTX-1660ti | FP32 | 30
-YOLOv5m | CLIP (ViT-B/32) | GTX-1660ti | FP32 | 23
+Detector | Feature Extractor | GPU | Precision | Image Size | <sup>Detection<br>/Frame | FPS
+--- | --- | --- | --- | --- | --- | ---
+YOLOv5s | CLIP (RN50) | GTX-1660ti | FP32 | 480x640 | 1 | 40
+YOLOv5m | CLIP (RN50) | GTX-1660ti | FP32 | 480x640 | 1 | 32
+YOLOv5s | CLIP (ViT-B/32) | GTX-1660ti | FP32 | 480x640 | 1 | 30
+YOLOv5m | CLIP (ViT-B/32) | GTX-1660ti | FP32 | 480x640 | 1 | 23
 
-> Note: Image size used is (480, 640) with one detection per frame.
 
 ## References
 
