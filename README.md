@@ -113,10 +113,10 @@ YOLOv5m<br>(CrowdHuman) | CLIP<br>(RN50) | 53.07 | **43.14** | **51.97** | 946 |
 
 Detector | Feature Extractor | GPU | Precision | FPS
 --- | --- | --- | --- | ---
-YOLOv5s | CLIP (RN50) | GTX-1660ti | FP32 | 34
-YOLOv5m | CLIP (RN50) | GTX-1660ti | FP32 | 27
-YOLOv5s | CLIP (ViT-B/32) | GTX-1660ti | FP32 | 24
-YOLOv5m | CLIP (ViT-B/32) | GTX-1660ti | FP32 | 20
+YOLOv5s | CLIP (RN50) | GTX-1660ti | FP32 | 40
+YOLOv5m | CLIP (RN50) | GTX-1660ti | FP32 | 32
+YOLOv5s | CLIP (ViT-B/32) | GTX-1660ti | FP32 | 30
+YOLOv5m | CLIP (ViT-B/32) | GTX-1660ti | FP32 | 23
 
 > Note: Image size used is (480, 640) with one detection per frame.
 
