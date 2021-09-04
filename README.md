@@ -9,9 +9,9 @@
 
 Feature Extractors (Replacement of Supervised Re-ID Models)
 
-- [x] [CLIP](https://arxiv.org/abs/2103.00020)
-- [ ] [DINO](https://arxiv.org/abs/2104.14294v2)
-- [ ] [MoCov3](https://arxiv.org/abs/2104.02057)
+- [x] [CLIP](https://arxiv.org/abs/2103.00020) (Zero-shot)
+- [ ] [DINO](https://arxiv.org/abs/2104.14294v2) (SSL)
+- [ ] [MoCov3](https://arxiv.org/abs/2104.02057) (SSL)
 
 Trackers
 
