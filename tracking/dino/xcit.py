@@ -239,6 +239,8 @@ class XciT(nn.Module):
         self.embed_dim = embed_dim
         self.patch_size = patch_size
 
+    def encode_image(self, x):
+        return self.forward(x)
         
     def forward(self, x, return_attention=False):
         B, C, H, W = x.shape
