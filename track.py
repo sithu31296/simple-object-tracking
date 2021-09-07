@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 from PIL import Image
 from tqdm import tqdm
-from tracking import clip
+from tracking import clip, dino
 from tracking.sort.tracker import DeepSORTTracker
 from tracking.utils import *
 
@@ -38,7 +38,8 @@ class Tracking:
         self.model = self.model.to(self.device)
         self.names = self.model.names
 
-        self.clip_model, self.clip_transform = clip.load(clip_model, device=self.device)
+        # self.clip_model, self.clip_transform = clip.load(clip_model, device=self.device)
+        self.clip_model, self.clip_transform = dino.load(clip_model, self.device)
         self.tracker = DeepSORTTracker('cosine', max_cosine_dist, nn_budget, max_iou_dist, max_age, n_init)
 
 

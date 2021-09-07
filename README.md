@@ -1,7 +1,7 @@
-# <div align="center">Simple Multi-Object Tracking</div>
+# <div align="center">Simple Object Tracking</div>
 
 <div align="center">
-<p>Object Tracking with YOLOv5, CLIP and DeepSORT</p>
+<p>Multi-Object Tracking with YOLOv5, CLIP and DeepSORT</p>
 <p>
 <img src="gifs/test_out.gif" width="270"/> <img src="gifs/newyork_out.gif" width="270"/> <img src="gifs/cars_out.gif" width="270"/> 
 </p>
@@ -22,7 +22,7 @@ Trackers
 
 ## Introduction
 
-This is a two-stage simple mulit-object tracking implementation with zero-shot or self-supervised feature extractors. The implementation is based from Roboflow [zero-shot-object-tracking](https://github.com/roboflow-ai/zero-shot-object-tracking); which incorporates CLIP as a feature extractor in DeepSORT. 
+This is a simple two-stage mulit-object tracking with zero-shot or self-supervised feature extractors. This implementation is based from Roboflow [zero-shot-object-tracking](https://github.com/roboflow-ai/zero-shot-object-tracking); which incorporates CLIP as a feature extractor in DeepSORT. 
 
 CLIP is a zero-shot classification model; which is pretrained under vision-langauge supervision with a lot of data. CLIP's zero-shot performance is on par with supervised ResNet models.
 
