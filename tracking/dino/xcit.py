@@ -17,25 +17,23 @@ class MLP(nn.Module):
 
 
 class PositionalEncodingFourier(nn.Module):
-    def __init__(self, dim: int = 768, temp: int = 10000):
+    def __init__(self, dim: int = 768):
         super().__init__()
+        self.dim = dim
         self.hidden_dim = 32
         self.token_projection = nn.Conv2d(self.hidden_dim * 2, dim, 1)
         self.scale = 2 * math.pi
-        self.temperature = temp
-        self.dim = dim
 
-    def forward(self, B, H, W):
+    def forward(self, B: int, H: int, W: int) -> Tensor:
         mask = torch.zeros(B, H, W).bool().to(self.token_projection.weight.device)
         not_mask = ~mask
         y_embed = not_mask.cumsum(1, dtype=torch.float32)
         x_embed = not_mask.cumsum(2, dtype=torch.float32)
-        eps = 1e-6
-        y_embed = y_embed / (y_embed[:, -1:, :] + eps) * self.scale
-        x_embed = x_embed / (x_embed[:, :, -1:] + eps) * self.scale
+        y_embed = y_embed / (y_embed[:, -1:, :] + 1e-6) * self.scale
+        x_embed = x_embed / (x_embed[:, :, -1:] + 1e-6) * self.scale
 
         dim_t = torch.arange(self.hidden_dim, dtype=torch.float32, device=mask.device)
-        dim_t = self.temperature ** (2 * (torch.div(dim_t, 2, rounding_mode='floor')) / self.hidden_dim)
+        dim_t = 10000 ** (2 * (torch.div(dim_t, 2, rounding_mode='floor')) / self.hidden_dim)
 
         pos_x = x_embed[:, :, :, None] / dim_t
         pos_y = y_embed[:, :, :, None] / dim_t
@@ -60,11 +58,8 @@ class Conv3x3(nn.Sequential):
 class ConvPatchEmbed(nn.Module):
     """Image to Patch Embedding using multiple convolutional layers
     """
-    def __init__(self, img_size=224, patch_size=8, embed_dim=768):
+    def __init__(self, patch_size=8, embed_dim=768):
         super().__init__()
-        img_size = (img_size, img_size) if isinstance(img_size, int) else img_size
-        self.num_patches = (img_size[0] // patch_size) * (img_size[1] // patch_size)
-
         if patch_size == 16:
             self.proj = nn.Sequential(
                 Conv3x3(3, embed_dim // 8, 2),
@@ -86,9 +81,9 @@ class ConvPatchEmbed(nn.Module):
 
     def forward(self, x: Tensor):
         x = self.proj(x)
-        Hp, Wp = x.shape[2], x.shape[3]
+        _, _, H, W = x.shape
         x = x.flatten(2).transpose(1, 2)
-        return x, (Hp, Wp)
+        return x, (H, W)
 
 
 class LPI(nn.Module):
@@ -97,16 +92,14 @@ class LPI(nn.Module):
     to augment the implicit communcation performed by the block diagonal scatter attention.
     Implemented using 2 layers of separable 3x3 convolutions with GeLU and BatchNorm2d
     """
-    def __init__(self, dim, out_dim=None):
+    def __init__(self, dim: int):
         super().__init__()
-        out_dim = out_dim or dim
-
-        self.conv1 = nn.Conv2d(dim, out_dim, 3, 1, 1, groups=out_dim)
+        self.conv1 = nn.Conv2d(dim, dim, 3, 1, 1, groups=dim)
         self.act = nn.GELU()
         self.bn = nn.BatchNorm2d(dim)
-        self.conv2 = nn.Conv2d(dim, out_dim, 3, 1, 1, groups=out_dim)
+        self.conv2 = nn.Conv2d(dim, dim, 3, 1, 1, groups=dim)
 
-    def forward(self, x, H, W):
+    def forward(self, x: Tensor, H: int, W: int) -> Tensor:
         B, N, C = x.shape
         x = x.permute(0, 2, 1).reshape(B, C, H, W)
         x = self.conv2(self.bn(self.act(self.conv1(x))))
@@ -139,7 +132,7 @@ class ClassAttention(nn.Module):
         cls_token = self.proj(cls_token)
 
         x = torch.cat([cls_token, x[:, 1:]], dim=1)
-        return x, attn_cls
+        return x
 
 
 class XCA(nn.Module):
@@ -166,7 +159,6 @@ class XCA(nn.Module):
 
         x = (attn @ v).permute(0, 3, 1, 2).reshape(B, N, C)
         x = self.proj(x)
-
         return x
 
 
@@ -181,20 +173,14 @@ class ClassAttentionBlock(nn.Module):
         self.gamma1 = nn.Parameter(eta * torch.ones(dim))
         self.gamma2 = nn.Parameter(eta * torch.ones(dim))
 
-
-    def forward(self, x: Tensor, return_attention=False) -> Tensor: 
-        y, attn = self.attn(self.norm1(x))  
-        if return_attention: return attn
-        x = x + self.gamma1 * y
+    def forward(self, x: Tensor) -> Tensor:
+        x = x + (self.gamma1 * self.attn(self.norm1(x)))
         x = self.norm2(x)
 
         x_res = x
-        cls_token = x[:, 0:1]
-        cls_token = self.gamma2 * self.mlp(cls_token)
-
+        cls_token = self.gamma2 * self.mlp(x[:, :1])
         x = torch.cat([cls_token, x[:, 1:]], dim=1)
-        x = x_res + x
-
+        x += x_res
         return x
 
 
@@ -222,18 +208,17 @@ class XCABlock(nn.Module):
 xcit_settings = {   
     'S12/8': [8, 12, 384, 8], #[patch_size, layers, embed dim, heads]
     'S12/16': [16, 12, 384, 8],
-    'M24/8': [8, 24, 512, 8],
     'M24/16': [16, 24, 512, 8],
 }
 
 
 class XciT(nn.Module):
-    def __init__(self, model_name: str = 'S12/8', image_size: int = 224) -> None:
+    def __init__(self, model_name: str = 'S12/8', *args, **kwargs) -> None:
         super().__init__()
         assert model_name in xcit_settings.keys(), f"XciT model name should be in {list(xcit_settings.keys())}"
         patch_size, layers, embed_dim, heads = xcit_settings[model_name]
         
-        self.patch_embed = ConvPatchEmbed(image_size, patch_size, embed_dim)
+        self.patch_embed = ConvPatchEmbed(patch_size, embed_dim)
         self.cls_token = nn.Parameter(torch.zeros(1, 1, embed_dim))
 
         self.pos_embeder = PositionalEncodingFourier(dim=embed_dim)
@@ -245,20 +230,15 @@ class XciT(nn.Module):
         self.cls_attn_blocks = nn.ModuleList([
             ClassAttentionBlock(embed_dim, heads)
         for _ in range(2)])
-
         self.norm = nn.LayerNorm(embed_dim)
-
-        self.embed_dim = embed_dim
-        self.patch_size = patch_size
 
     def encode_image(self, x):
         return self.forward(x)
         
-    def forward(self, x, return_attention=False):
-        B, C, H, W = x.shape
+    def forward(self, x):
+        B = x.shape[0]
         x, (Hp, Wp) = self.patch_embed(x)   
-        pos_encoding = self.pos_embeder(B, Hp, Wp).reshape(B, -1, x.shape[1]).permute(0, 2, 1)  
-        x = x + pos_encoding
+        x += self.pos_embeder(B, Hp, Wp).reshape(B, -1, x.shape[1]).permute(0, 2, 1)  
 
         for blk in self.blocks:
             x = blk(x, Hp, Wp)
@@ -266,10 +246,7 @@ class XciT(nn.Module):
         cls_tokens = self.cls_token.expand(B, -1, -1)
         x = torch.cat((cls_tokens, x), dim=1)
 
-        for i, blk in enumerate(self.cls_attn_blocks):
-            if i + 1 == len(self.cls_attn_blocks):
-                if return_attention:
-                    return blk(x, return_attention=return_attention)
+        for blk in self.cls_attn_blocks:
             x = blk(x)
 
         x = self.norm(x)

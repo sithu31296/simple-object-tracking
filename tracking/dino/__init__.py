@@ -1,10 +1,13 @@
 import torch
 from torchvision import transforms as T
 from .xcit import XciT
+from .vit import ViT
+
+__all__ = ['ViT', 'XciT']
 
 
 def load(model_path, device):
-    model = XciT('S12/8', image_size=224)
+    model = ViT('S/8')
     model.load_state_dict(torch.load(model_path, map_location='cpu'))
     model = model.to(device)
     model.eval()
