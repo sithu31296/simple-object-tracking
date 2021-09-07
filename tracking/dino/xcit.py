@@ -64,13 +64,25 @@ class ConvPatchEmbed(nn.Module):
         super().__init__()
         img_size = (img_size, img_size) if isinstance(img_size, int) else img_size
         self.num_patches = (img_size[0] // patch_size) * (img_size[1] // patch_size)
-        self.proj = nn.Sequential(
-            Conv3x3(3, embed_dim // 4, 2),
-            nn.GELU(),
-            Conv3x3(embed_dim // 4, embed_dim // 2, 2),
-            nn.GELU(),
-            Conv3x3(embed_dim // 2, embed_dim, 2),
-        )
+
+        if patch_size == 16:
+            self.proj = nn.Sequential(
+                Conv3x3(3, embed_dim // 8, 2),
+                nn.GELU(),
+                Conv3x3(embed_dim // 8, embed_dim // 4, 2),
+                nn.GELU(),
+                Conv3x3(embed_dim // 4, embed_dim // 2, 2),
+                nn.GELU(),
+                Conv3x3(embed_dim // 2, embed_dim, 2),
+            )
+        else:
+            self.proj = nn.Sequential(
+                Conv3x3(3, embed_dim // 4, 2),
+                nn.GELU(),
+                Conv3x3(embed_dim // 4, embed_dim // 2, 2),
+                nn.GELU(),
+                Conv3x3(embed_dim // 2, embed_dim, 2),
+            )
 
     def forward(self, x: Tensor):
         x = self.proj(x)
@@ -209,7 +221,7 @@ class XCABlock(nn.Module):
 
 xcit_settings = {   
     'S12/8': [8, 12, 384, 8], #[patch_size, layers, embed dim, heads]
-    'S22/16': [16, 24, 512, 8],
+    'S12/16': [16, 12, 384, 8],
     'M24/8': [8, 24, 512, 8],
     'M24/16': [16, 24, 512, 8],
 }
@@ -265,8 +277,8 @@ class XciT(nn.Module):
 
 
 if __name__ == '__main__':
-    model = XciT('S12/8')
-    model.load_state_dict(torch.load('checkpoints/xcit/dino_xcit_small_12_p8_pretrain.pth', map_location='cpu'))
+    model = XciT('S12/16')
+    model.load_state_dict(torch.load('checkpoints/xcit/dino_xcit_small_12_p16_pretrain.pth', map_location='cpu'))
     x = torch.zeros(1, 3, 224, 224)
     y = model(x)
     print(y.shape)
