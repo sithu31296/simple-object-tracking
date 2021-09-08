@@ -67,7 +67,7 @@ $ python track.py --source 0 --yolo-model checkpoints/yolov5s.pt --reid-model CL
 
 Available ReID models (Feature Extractors):
 * **CLIP**: `CLIP-RN50`, `CLIP-ViT-B/32`
-* **DINO**: `DINO-XciT-S12/16`, `DINO-XciT-S12/8`, `DINO-XciT-M24/16`, `DINO-ViT-S/16`, `DINO-ViT-S/8`, `DINO-ViT-B/16`
+* **DINO**: `DINO-XciT-S12/16`, `DINO-XciT-M24/16`, `DINO-ViT-S/16`, `DINO-ViT-B/16`
 
 Check [here](tracking/utils.py#L14) to get COCO class index for your class.
 
@@ -110,20 +110,21 @@ YOLOv5m<sup><br>(CrowdHuman) | CLIP<sup><br>(RN50) | 53.25 | 43.25 | 52.12 | 912
 YOLOv5m<sup><br>(CrowdHuman) | CLIP<sup><br>(ViT-B/32) | 53.35 | 43.03 | 51.25 | 896 | **199** | 91 | 14035 | **36575** | 4
 ||
 YOLOv5m<sup><br>(CrowdHuman) | DINO<sup><br>(XciT-S12/16) | 54.41 | 47.44 | 59.01 | 511 | 184 | 101 | 12265 | 37555 |8
-YOLOv5m<sup><br>(CrowdHuman) | DINO<sup><br>(XciT-S12/8) | 54.44 | 47.63 | 59.24 | 517 | 185 | 98 | 12140 | 37639 | 4
-YOLOv5m<sup><br>(CrowdHuman) | DINO<sup><br>(XciT-M24/16) | 54.56 | **47.71** | **59.77** | 504 | 187 | 96 | 12364 | 37306 | 5
 YOLOv5m<sup><br>(CrowdHuman) | DINO<sup><br>(ViT-S/16) | 54.56 | 47.61 | 58.94 | 519 | 189 | 97 | 12346 | 37308 | 8
-YOLOv5m<sup><br>(CrowdHuman) | DINO<sup><br>(ViT-S/8) | 54.53 | 47.70 | 59.20 | 542 | 180 | 102 | 11912 | 37744 | 4
+YOLOv5m<sup><br>(CrowdHuman) | DINO<sup><br>(XciT-M24/16) | 54.56 | **47.71** | **59.77** | 504 | 187 | 96 | 12364 | 37306 | 5
 YOLOv5m<sup><br>(CrowdHuman) | DINO<sup><br>(ViT-B/16) | **54.58** | 47.55 | 58.89 | 507 | 184 | 97 | 12017 | 37621 | 5
 
 **FPS Results**
 
 Detector | Feature Extractor | GPU | Precision | Image Size | Detection<br>/Frame | FPS
 --- | --- | --- | --- | --- | --- | ---
-YOLOv5s | CLIP (RN50) | GTX-1660ti | FP32 | 480x640 | 1 | 40
-YOLOv5m | CLIP (RN50) | GTX-1660ti | FP32 | 480x640 | 1 | 32
-YOLOv5s | CLIP (ViT-B/32) | GTX-1660ti | FP32 | 480x640 | 1 | 30
-YOLOv5m | CLIP (ViT-B/32) | GTX-1660ti | FP32 | 480x640 | 1 | 23
+YOLOv5s | CLIP-RN50 | GTX-1660ti | FP32 | 480x640 | 1 | 40
+YOLOv5m | CLIP-RN50 | GTX-1660ti | FP32 | 480x640 | 1 | 32
+YOLOv5s | CLIP-ViT-B/32 | GTX-1660ti | FP32 | 480x640 | 1 | 30
+||
+YOLOv5s | DINO-XciT-S12/16 | GTX-1660ti | FP32 | 480x640 | 1 | 36
+YOLOv5s | DINO-ViT-B/16 | GTX-1660ti | FP32 | 480x640 | 1 | 30
+YOLOv5s | DINO-XciT-M24/16 | GTX-1660ti | FP32 | 480x640 | 1 | 25
 
 
 ## References
