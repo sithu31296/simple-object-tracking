@@ -3,9 +3,7 @@ import time
 import random
 import torch
 import os
-import hashlib
 import urllib.request
-import warnings
 import numpy as np
 from pathlib import Path
 from tqdm import tqdm
@@ -289,18 +287,8 @@ def non_max_suppression(pred, conf_thres=0.25, iou_thres=0.45, classes=None):
 def download(url: str, root: str):
     os.makedirs(root, exist_ok=True)
     filename = os.path.basename(url)
-
-    # expected_sha256 = url.split("/")[-2]
     download_target = os.path.join(root, filename)
 
-    # if os.path.exists(download_target) and not os.path.isfile(download_target):
-    #     raise RuntimeError(f"{download_target} exists and is not a regular file")
-
-    # if os.path.isfile(download_target):
-    #     if hashlib.sha256(open(download_target, "rb").read()).hexdigest() == expected_sha256:
-    #         return download_target
-    #     else:
-    #         warnings.warn(f"{download_target} exists, but the SHA256 checksum does not match; re-downloading the file")
     if os.path.exists(download_target) and os.path.isfile(download_target):
         return download_target
 
@@ -314,9 +302,6 @@ def download(url: str, root: str):
 
                 output.write(buffer)
                 loop.update(len(buffer))
-
-    # if hashlib.sha256(open(download_target, "rb").read()).hexdigest() != expected_sha256:
-    #     raise RuntimeError(f"Model has been downloaded but the SHA256 checksum does not not match")
 
     return download_target
 
