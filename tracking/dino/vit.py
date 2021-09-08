@@ -74,7 +74,6 @@ class TransformerEncoder(nn.Module):
 vit_settings = {    
     'S/8': [8, 12, 384, 6],   #[patch_size, number_of_layers, embed_dim, heads]
     'S/16': [16, 12, 384, 6],
-    'B/8': [8, 12, 768, 12],
     'B/16': [16, 12, 768, 12]
 }
 

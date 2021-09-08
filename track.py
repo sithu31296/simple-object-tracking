@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 from PIL import Image
 from tqdm import tqdm
-from tracking import clip, dino
+from tracking import load_feature_extractor
 from tracking.sort.tracker import DeepSORTTracker
 from tracking.utils import *
 
@@ -17,7 +17,7 @@ from yolov5.models.experimental import attempt_load
 class Tracking:
     def __init__(self, 
         yolo_model, 
-        clip_model,
+        reid_model,
         img_size=640,
         filter_class=None,
         conf_thres=0.25,
@@ -38,8 +38,7 @@ class Tracking:
         self.model = self.model.to(self.device)
         self.names = self.model.names
 
-        # self.clip_model, self.clip_transform = clip.load(clip_model, device=self.device)
-        self.clip_model, self.clip_transform = dino.load(clip_model, self.device)
+        self.patch_model, self.patch_transform = load_feature_extractor(reid_model, self.device)
         self.tracker = DeepSORTTracker('cosine', max_cosine_dist, nn_budget, max_iou_dist, max_age, n_init)
 
 
@@ -52,16 +51,16 @@ class Tracking:
         return img
 
 
-    def extract_clip_features(self, boxes, img):
+    def extract_features(self, boxes, img):
         image_patches = []
         for xyxy in boxes:
             x1, y1, x2, y2 = map(int, xyxy)
             img_patch = Image.fromarray(img[y1:y2, x1:x2])
-            img_patch = self.clip_transform(img_patch)
+            img_patch = self.patch_transform(img_patch)
             image_patches.append(img_patch)
 
         image_patches = torch.stack(image_patches).to(self.device)
-        features = self.clip_model.encode_image(image_patches).cpu().numpy()
+        features = self.patch_model.encode_image(image_patches).cpu().numpy()
         return features
 
 
@@ -71,7 +70,7 @@ class Tracking:
         for det in pred:
             if len(det):
                 boxes = scale_boxes(det[:, :4], img0.shape[:2], img1.shape[-2:]).cpu()
-                features = self.extract_clip_features(boxes, img0)
+                features = self.extract_features(boxes, img0)
 
                 self.tracker.predict()
                 self.tracker.update(boxes, det[:, 5], features)
@@ -96,7 +95,7 @@ def argument_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('--source', type=str, default='0')
     parser.add_argument('--yolo-model', type=str, default='checkpoints/yolov5s.pt')
-    parser.add_argument('--clip-model', type=str, default='RN50')
+    parser.add_argument('--reid-model', type=str, default='CLIP-RN50')
     parser.add_argument('--img-size', type=int, default=640)
     parser.add_argument('--filter-class', nargs='+', type=int, default=None)
     parser.add_argument('--conf-thres', type=float, default=0.4)
@@ -113,7 +112,7 @@ if __name__ == '__main__':
     args = argument_parser()
     tracking = Tracking(
         args.yolo_model, 
-        args.clip_model,
+        args.reid_model,
         args.img_size, 
         args.filter_class,
         args.conf_thres, 

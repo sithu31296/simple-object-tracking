@@ -9,8 +9,8 @@ from track import Tracking
 
 
 class EvalTracking(Tracking):
-    def __init__(self, yolo_model, clip_model, img_size, filter_class, conf_thres, iou_thres, max_cosine_dist, max_iou_dist, nn_budget, max_age, n_init) -> None:
-        super().__init__(yolo_model, clip_model, img_size=img_size, filter_class=filter_class, conf_thres=conf_thres, iou_thres=iou_thres, max_cosine_dist=max_cosine_dist, max_iou_dist=max_iou_dist, nn_budget=nn_budget, max_age=max_age, n_init=n_init)
+    def __init__(self, yolo_model, reid_model, img_size, filter_class, conf_thres, iou_thres, max_cosine_dist, max_iou_dist, nn_budget, max_age, n_init) -> None:
+        super().__init__(yolo_model, reid_model, img_size=img_size, filter_class=filter_class, conf_thres=conf_thres, iou_thres=iou_thres, max_cosine_dist=max_cosine_dist, max_iou_dist=max_iou_dist, nn_budget=nn_budget, max_age=max_age, n_init=n_init)
 
     def postprocess(self, pred, img1, img0, txt_path, frame_idx):
         pred = non_max_suppression(pred, self.conf_thres, self.iou_thres, classes=self.filter_class)
@@ -18,7 +18,7 @@ class EvalTracking(Tracking):
         for det in pred:
             if len(det):
                 boxes = scale_boxes(det[:, :4], img0.shape[:2], img1.shape[-2:]).cpu()
-                features = self.extract_clip_features(boxes, img0)
+                features = self.extract_features(boxes, img0)
 
                 self.tracker.predict()
                 self.tracker.update(boxes, det[:, 5], features)
@@ -45,7 +45,7 @@ def argument_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('--root', type=str, default='/home/sithu/datasets/MOT16')
     parser.add_argument('--yolo-model', type=str, default='checkpoints/crowdhuman_yolov5m.pt')
-    parser.add_argument('--clip-model', type=str, default='RN50')
+    parser.add_argument('--reid-model', type=str, default='CLIP-RN50')
     parser.add_argument('--img-size', type=int, default=640)
     parser.add_argument('--filter-class', nargs='+', type=int, default=0)
     parser.add_argument('--conf-thres', type=float, default=0.4)
@@ -62,7 +62,7 @@ if __name__ == '__main__':
     args = argument_parser()
     tracking = EvalTracking(
         args.yolo_model,
-        args.clip_model, 
+        args.reid_model, 
         args.img_size, 
         args.filter_class,
         args.conf_thres, 

@@ -2,8 +2,13 @@ import cv2
 import time
 import random
 import torch
+import os
+import hashlib
+import urllib.request
+import warnings
 import numpy as np
 from pathlib import Path
+from tqdm import tqdm
 from torchvision import ops, io
 from threading import Thread
 from torch.backends import cudnn
@@ -281,63 +286,35 @@ def non_max_suppression(pred, conf_thres=0.25, iou_thres=0.45, classes=None):
     return output
 
 
-# def nms_pyimagesearch(boxes, iou_thres, scores=None):
-#     """
-#     http://www.pyimagesearch.com/2015/02/16/faster-non-maximum-suppression-python/
-#     Examples
-#     --------
-#         >>> boxes = [d.roi for d in detections]
-#         >>> scores = [d.confidence for d in detections]
-#         >>> indices = non_max_suppression(boxes, max_bbox_overlap, scores)
-#         >>> detections = [detections[i] for i in indices]
-#     Parameters
-#     ----------
-#     boxes : ndarray
-#         Array of ROIs (x, y, width, height).
-#     max_bbox_overlap : float
-#         ROIs that overlap more than this values are suppressed.
-#     scores : Optional[array_like]
-#         Detector confidence score.
-#     Returns
-#     -------
-#     List[int]
-#         Returns indices of detections that have survived non-maxima suppression.
-#     """
-#     if len(boxes) == 0:
-#         return []
+def download(url: str, root: str):
+    os.makedirs(root, exist_ok=True)
+    filename = os.path.basename(url)
 
-#     boxes = boxes.astype(np.float)
-#     pick = []
+    expected_sha256 = url.split("/")[-2]
+    download_target = os.path.join(root, filename)
 
-#     x1 = boxes[:, 0]
-#     y1 = boxes[:, 1]
-#     x2 = boxes[:, 2] + boxes[:, 0]
-#     y2 = boxes[:, 3] + boxes[:, 1]
+    if os.path.exists(download_target) and not os.path.isfile(download_target):
+        raise RuntimeError(f"{download_target} exists and is not a regular file")
 
-#     area = (x2 - x1 + 1) * (y2 - y1 + 1)
+    if os.path.isfile(download_target):
+        if hashlib.sha256(open(download_target, "rb").read()).hexdigest() == expected_sha256:
+            return download_target
+        else:
+            warnings.warn(f"{download_target} exists, but the SHA256 checksum does not match; re-downloading the file")
 
-#     if scores is not None:
-#         idxs = np.argsort(scores)
-#     else:
-#         idxs = np.argsort(y2)
+    with urllib.request.urlopen(url) as source, open(download_target, "wb") as output:
+        with tqdm(total=int(source.info().get("Content-Length")), ncols=80, unit='iB', unit_scale=True, unit_divisor=1024) as loop:
+            while True:
+                buffer = source.read(8192)
+                if not buffer:
+                    break
 
-#     while len(idxs) > 0:
-#         last = len(idxs) - 1
-#         i = idxs[last]
-#         pick.appned(i)
+                output.write(buffer)
+                loop.update(len(buffer))
 
-#         xx1 = np.maximum(x1[i], x1[idxs[:last]])
-#         yy1 = np.maximum(y1[i], y1[idxs[:last]])
-#         xx2 = np.minimum(x2[i], x2[idxs[:last]])
-#         yy2 = np.minimum(y2[i], y2[idxs[:last]])
+    if hashlib.sha256(open(download_target, "rb").read()).hexdigest() != expected_sha256:
+        raise RuntimeError(f"Model has been downloaded but the SHA256 checksum does not not match")
 
-#         w = np.maximum(0, xx2 - xx1 + 1)
-#         h = np.maximum(0, yy2 - yy1 + 1)
-
-#         overlap = (w * h) / area[idxs[:last]]
-
-#         idxs = np.delete(idxs, np.concatenate(([last], np.where(overlap > iou_thres)[0])))
-
-#     return pick
+    return download_target
 
 
