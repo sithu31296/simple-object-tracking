@@ -118,8 +118,7 @@ YOLOv5m<sup><br>(CrowdHuman) | DINO<sup><br>(ViT-B/16) | **54.58** | 47.55 | 58.
 
 Detector | Feature Extractor | GPU | Precision | Image Size | Detection<br>/Frame | FPS
 --- | --- | --- | --- | --- | --- | ---
-YOLOv5s | CLIP-RN50 | GTX-1660ti | FP32 | 480x640 | 1 | 40
-YOLOv5m | CLIP-RN50 | GTX-1660ti | FP32 | 480x640 | 1 | 32
+YOLOv5s | CLIP-RN50 | GTX-1660ti | FP32 | 480x640 | 1 | 38
 YOLOv5s | CLIP-ViT-B/32 | GTX-1660ti | FP32 | 480x640 | 1 | 30
 ||
 YOLOv5s | DINO-XciT-S12/16 | GTX-1660ti | FP32 | 480x640 | 1 | 36
