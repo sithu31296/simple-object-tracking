@@ -1,9 +1,5 @@
 import numpy as np
 from scipy.optimize import linear_sum_assignment
-from .kalman_filter import chi2inv95
-
-
-INFTY_COST = 1e+5
 
 
 def iou(bbox, candidates):
@@ -51,14 +47,13 @@ def iou_cost(tracks, detections, track_indices=None, detection_indices=None):
     cost_matrix = np.zeros((len(track_indices), len(detection_indices)))
     for row, track_idx in enumerate(track_indices):
         if tracks[track_idx].time_since_update > 1:
-            cost_matrix[row, :] = INFTY_COST
+            cost_matrix[row, :] = 1e+5
             continue
 
         bbox = tracks[track_idx].to_tlwh()
         candidates = np.asarray([detections[i].tlwh for i in detection_indices])
         cost_matrix[row, :] = 1. - iou(bbox, candidates)
     return cost_matrix
-
 
 
 def _nn_euclidean_distance(a, b):
@@ -278,9 +273,7 @@ def matching_cascade(distance_metric, max_distance, cascade_depth, tracks, detec
         if len(unmatched_detections) == 0:  # No detections left
             break
 
-        track_indices_l = [
-            k for k in track_indices if tracks[k].time_since_update == 1 + level
-        ]
+        track_indices_l = [k for k in track_indices if tracks[k].time_since_update == 1 + level]
         if len(track_indices_l) == 0:  # Nothing to match at this level
             continue
 
@@ -290,7 +283,7 @@ def matching_cascade(distance_metric, max_distance, cascade_depth, tracks, detec
     return matches, unmatched_tracks, unmatched_detections
 
 
-def gate_cost_matrix(kf, cost_matrix, tracks, detections, track_indices, detection_indices, gated_cost=INFTY_COST, only_position=False):
+def gate_cost_matrix(kf, cost_matrix, tracks, detections, track_indices, detection_indices):
     """Invalidate infeasible entries in cost matrix based on the state
     distributions obtained by Kalman filtering.
     Parameters
@@ -311,22 +304,14 @@ def gate_cost_matrix(kf, cost_matrix, tracks, detections, track_indices, detecti
     detection_indices : List[int]
         List of detection indices that maps columns in `cost_matrix` to
         detections in `detections` (see description above).
-    gated_cost : Optional[float]
-        Entries in the cost matrix corresponding to infeasible associations are
-        set this value. Defaults to a very large value.
-    only_position : Optional[bool]
-        If True, only the x, y position of the state distribution is considered
-        during gating. Defaults to False.
     Returns
     -------
     ndarray
         Returns the modified cost matrix.
     """
-    gating_dim = 2 if only_position else 4
-    gating_threshold = chi2inv95[gating_dim]
     measurements = np.asarray([detections[i].to_xyah() for i in detection_indices])
     for row, track_idx in enumerate(track_indices):
         track = tracks[track_idx]
-        gating_distance = kf.gating_distance(track.mean, track.covariance, measurements, only_position)
-        cost_matrix[row, gating_distance > gating_threshold] = gated_cost
+        gating_distance = kf.gating_distance(track.mean, track.covariance, measurements)
+        cost_matrix[row, gating_distance > 9.4877] = 1e+5
     return cost_matrix

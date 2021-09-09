@@ -57,7 +57,7 @@ class DeepSORTTracker:
             track.increment_age()
             track.mark_missed()
 
-    def to_tlwh(self, boxes):
+    def xyxy2xywh(self, boxes):
         boxes[:, 2] -= boxes[:, 0]
         boxes[:, 3] -= boxes[:, 1]
         return boxes
@@ -65,7 +65,7 @@ class DeepSORTTracker:
     def update(self, boxes, classes, features):
         detections = [
             Detection(bbox, class_id, feature) 
-        for bbox, class_id, feature in zip(self.to_tlwh(boxes), classes, features)]
+        for bbox, class_id, feature in zip(self.xyxy2xywh(boxes), classes, features)]
 
         # Run matching cascade.
         matches, unmatched_tracks, unmatched_detections = self._match(detections)

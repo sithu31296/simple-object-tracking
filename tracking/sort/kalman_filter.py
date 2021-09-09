@@ -2,23 +2,6 @@ import numpy as np
 import scipy.linalg
 
 
-"""
-Table for the 0.95 quantile of the chi-square distribution with N degrees of
-freedom (contains values for N=1, ..., 9). Taken from MATLAB/Octave's chi2inv
-function and used as Mahalanobis gating threshold.
-"""
-chi2inv95 = {
-    1: 3.8415,
-    2: 5.9915,
-    3: 7.8147,
-    4: 9.4877,
-    5: 11.070,
-    6: 12.592,
-    7: 14.067,
-    8: 15.507,
-    9: 16.919}
-
-
 class KalmanFilter:
     """A simple Kalman filter for tracking bounding boxes in image space
     The 8-dimensional state space
@@ -152,11 +135,8 @@ class KalmanFilter:
         new_covariance = covariance - np.linalg.multi_dot((kalman_gain, projected_cov, kalman_gain.T))
         return new_mean, new_covariance
 
-    def gating_distance(self, mean, covariance, measurements, only_position=False):
+    def gating_distance(self, mean, covariance, measurements):
         """Compute gating distance between state distribution and measurements.
-        A suitable distance threshold can be obtained from `chi2inv95`. If
-        `only_position` is False, the chi-square distribution has 4 degrees of
-        freedom, otherwise 2.
         Parameters
         ----------
         mean : (ndarray) Mean vector over the state distribution (8 dimensional).
@@ -165,9 +145,6 @@ class KalmanFilter:
             An Nx4 dimensional matrix of N measurements, each in
             format (x, y, a, h) where (x, y) is the bounding box center
             position, a the aspect ratio, and h the height.
-        only_position : Optional[bool]
-            If True, distance computation is done with respect to the bounding
-            box center position only.
         Returns
         -------
         ndarray
@@ -176,10 +153,6 @@ class KalmanFilter:
             `measurements[i]`.
         """
         mean, covariance = self.project(mean, covariance)
-        if only_position:
-            mean, covariance = mean[:2], covariance[:2, :2]
-            measurements = measurements[:, :2]
-
         cholesky_factor = np.linalg.cholesky(covariance)
         d = measurements - mean
         z = scipy.linalg.solve_triangular(cholesky_factor, d.T, lower=True, check_finite=False, overwrite_b=True)
