@@ -1,7 +1,7 @@
 # <div align="center">Simple Object Tracking</div>
 
 <div align="center">
-<p>Multi-Object Tracking with YOLOv5, CLIP and DeepSORT</p>
+<p>Multi-Object Tracking with YOLOv5, CLIP, DINO and DeepSORT</p>
 <p>
 <img src="gifs/test_out.gif" width="270"/> <img src="gifs/newyork_out.gif" width="270"/> <img src="gifs/cars_out.gif" width="270"/> 
 </p>
@@ -9,24 +9,11 @@
 
 ## Introduction
 
-This is a simple two-stage mulit-object tracking with zero-shot or self-supervised feature extractors. This implementation is based from Roboflow [zero-shot-object-tracking](https://github.com/roboflow-ai/zero-shot-object-tracking); which incorporates CLIP as a feature extractor in DeepSORT. 
+This is a simple two-stage mulit-object tracking [YOLOv5](https://github.com/ultralytics/yolov5) and [DeepSORT](https://arxiv.org/abs/1703.07402) with zero-short or self-supervised feature extractors. 
 
-CLIP is a zero-shot classification model; which is pretrained under vision-langauge supervision with a lot of data. CLIP's zero-shot performance is on par with supervised ResNet models.
+Normally, in DeepSORT, the deep part of the model is trained on a person re-identification dataset like [Market1501](https://www.kaggle.com/pengcw1/market-1501/data). We will replace this model with zero-shot or self-supervised models; which makes it ready to track any classes without needing to re-train.
 
-The benefit of this approach is that it can track a lof of classes out-of-the-box without needing to re-train the feature extractor (re-identification model) for a specific class in DeepSORT. Its performance may not be as good as traditional re-identification model; which is trained on tracking/re-identification datasets.
-
-## Supported Models and Trackers
-
-Feature Extractors (Replacement of Supervised Re-ID Models)
-
-- [x] [CLIP](https://arxiv.org/abs/2103.00020) (Zero-shot)
-- [x] [DINO](https://arxiv.org/abs/2104.14294v2) (SSL)
-
-Trackers
-
-- [x] [DeepSORT](https://arxiv.org/abs/1703.07402)
-- [ ] [Tracktor++](https://arxiv.org/abs/1903.05625)
-- [ ] [UniTrack](https://arxiv.org/abs/2107.02156)
+SOTA models like [CLIP](https://arxiv.org/abs/2103.00020) (zero-shot) and [DINO](https://arxiv.org/abs/2104.14294v2) (SSL) are currently experimented. If better models come out, I will consider adding it. 
 
 ## Requirements
 
@@ -128,11 +115,8 @@ YOLOv5s | DINO-XciT-M24/16 | GTX-1660ti | FP32 | 480x640 | 1 | 25
 
 ## References
 
-* https://github.com/roboflow-ai/zero-shot-object-tracking
 * https://github.com/ultralytics/yolov5
-* https://github.com/openai/CLIP
 * https://github.com/JonathonLuiten/TrackEval
-* https://github.com/deepakcrk/yolov5-crowdhuman
 
 ## Citations
 
@@ -144,18 +128,20 @@ YOLOv5s | DINO-XciT-M24/16 | GTX-1660ti | FP32 | 480x640 | 1 | 25
   year={2021}
 }
 
-@misc{yolov5deepsort2020,
-  title={Real-time multi-object tracker using YOLOv5 and deep sort},
-  author={Mikel Broström},
-  howpublished = {\url{https://github.com/mikel-brostrom/Yolov5_DeepSort_Pytorch}},
-  year={2020}
-}
-
 @article{el2021xcit,
   title={XCiT: Cross-Covariance Image Transformers},
   author={El-Nouby, Alaaeldin and Touvron, Hugo and Caron, Mathilde and Bojanowski, Piotr and Douze, Matthijs and Joulin, Armand and Laptev, Ivan and Neverova, Natalia and Synnaeve, Gabriel and Verbeek, Jakob and others},
   journal={arXiv preprint arXiv:2106.09681},
   year={2021}
+}
+
+@misc{radford2021learning,
+  title={Learning Transferable Visual Models From Natural Language Supervision}, 
+  author={Alec Radford and Jong Wook Kim and Chris Hallacy and Aditya Ramesh and Gabriel Goh and Sandhini Agarwal and Girish Sastry and Amanda Askell and Pamela Mishkin and Jack Clark and Gretchen Krueger and Ilya Sutskever},
+  year={2021},
+  eprint={2103.00020},
+  archivePrefix={arXiv},
+  primaryClass={cs.CV}
 }
 
 @inproceedings{Wojke2017simple,
