@@ -137,8 +137,13 @@ if __name__ == '__main__':
     else:
         reader = VideoReader(args.source)
         writer = VideoWriter(f"{args.source.rsplit('.', maxsplit=1)[0]}_out.mp4", reader.fps)
+        fps = FPS(len(reader.frames))
 
         for frame in tqdm(reader):
+            fps.start()
             output = tracking.predict(frame.numpy())
+            fps.stop(False)
             writer.update(output)
+
+        print(f"FPS: {fps.fps}")
         writer.write()

@@ -86,9 +86,9 @@ if __name__ == '__main__':
 
     for folder in folders:
         tracking.tracker.reset()
-        fps = FPS(avg=100)
         reader = SequenceStream(folder / 'img1')
         txt_path = save_path / f"{folder.stem}.txt"
+        fps = FPS(len(reader.frames))
 
         for i, frame in tqdm(enumerate(reader), total=len(reader)):
             fps.start()
