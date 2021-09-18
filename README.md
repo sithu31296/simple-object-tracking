@@ -71,15 +71,15 @@ $ python eval_mot.py --root MOT16_ROOT_DIR --yolo-model checkpoints/yolov5m.pt -
 * Evaluate with TrackEval:
 
 ```bash
-$ python TrackEval/scripts/run_mot_challenge.py
-    --BENCHMARK MOT16
-    --GT_FOLDER PROJECT_ROOT/data/gt/mot_challenge/
-    --TRACKERS_FOLDER PROJECT_ROOT/data/trackers/mot_challenge/
-    --TRACKERS_TO_EVAL mot_det
-    --SPLIT_TO_EVAL train
-    --USE_PARALLEL True
-    --NUM_PARALLEL_CORES 4
-    --PRINT_ONLY_COMBINED True
+$ python TrackEval/scripts/run_mot_challenge.py \
+    --BENCHMARK MOT16 \
+    --GT_FOLDER PROJECT_ROOT/data/gt/mot_challenge/ \
+    --TRACKERS_FOLDER PROJECT_ROOT/data/trackers/mot_challenge/ \
+    --TRACKERS_TO_EVAL mot_det \
+    --SPLIT_TO_EVAL train \
+    --USE_PARALLEL True \
+    --NUM_PARALLEL_CORES 4 \
+    --PRINT_ONLY_COMBINED True \
 ```
 
 > Notes: `FOLDER` parameters in `run_mot_challenge.py` must be an absolute path.

@@ -42,24 +42,14 @@ class KalmanFilter:
         mean_vel = np.zeros_like(mean_pos)
         mean = np.r_[mean_pos, mean_vel]
 
-        # std = [
-        #     2 * self._std_weight_position * measurement[3],
-        #     2 * self._std_weight_position * measurement[3],
-        #     1e-2,
-        #     2 * self._std_weight_position * measurement[3],
-        #     10 * self._std_weight_velocity * measurement[3],
-        #     10 * self._std_weight_velocity * measurement[3],
-        #     1e-5,
-        #     10 * self._std_weight_velocity * measurement[3]
-        # ]
         std = [
-            2 * self._std_weight_position * measurement[0],
-            2 * self._std_weight_position * measurement[1],
-            1 * measurement[2],
             2 * self._std_weight_position * measurement[3],
-            10 * self._std_weight_velocity * measurement[0],
-            10 * self._std_weight_velocity * measurement[1],
-            0.1 * measurement[2],
+            2 * self._std_weight_position * measurement[3],
+            1e-2,
+            2 * self._std_weight_position * measurement[3],
+            10 * self._std_weight_velocity * measurement[3],
+            10 * self._std_weight_velocity * measurement[3],
+            1e-5,
             10 * self._std_weight_velocity * measurement[3]
         ]
         covariance = np.diag(np.square(std))
@@ -81,25 +71,15 @@ class KalmanFilter:
             Returns the mean vector and covariance matrix of the predicted
             state. Unobserved velocities are initialized to 0 mean.
         """
-        # std_pos = [
-        #     self._std_weight_position * mean[3],
-        #     self._std_weight_position * mean[3],
-        #     1e-2,
-        #     self._std_weight_position * mean[3]]
-        # std_vel = [
-        #     self._std_weight_velocity * mean[3],
-        #     self._std_weight_velocity * mean[3],
-        #     1e-5,
-        #     self._std_weight_velocity * mean[3]]
         std_pos = [
-            self._std_weight_position * mean[0],
-            self._std_weight_position * mean[1],
-            1 * mean[2],
+            self._std_weight_position * mean[3],
+            self._std_weight_position * mean[3],
+            1e-2,
             self._std_weight_position * mean[3]]
         std_vel = [
-            self._std_weight_velocity * mean[0],
-            self._std_weight_velocity * mean[1],
-            0.1 * mean[2],
+            self._std_weight_velocity * mean[3],
+            self._std_weight_velocity * mean[3],
+            1e-5,
             self._std_weight_velocity * mean[3]]
 
         motion_cov = np.diag(np.square(np.r_[std_pos, std_vel]))
@@ -119,16 +99,10 @@ class KalmanFilter:
         (ndarray, ndarray)
             Returns the projected mean and covariance matrix of the given state estimate.
         """
-        # std = [
-        #     self._std_weight_position * mean[3],
-        #     self._std_weight_position * mean[3],
-        #     1e-1,
-        #     self._std_weight_position * mean[3]
-        # ]
         std = [
-            self._std_weight_position * mean[0],
-            self._std_weight_position * mean[1],
-            0.1 * mean[2],
+            self._std_weight_position * mean[3],
+            self._std_weight_position * mean[3],
+            1e-1,
             self._std_weight_position * mean[3]
         ]
 
